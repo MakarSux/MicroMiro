@@ -1,2 +1,6 @@
 # .gitignore
 .env
+
+# golang
+*.mod
+*.sum
