@@ -1,14 +1,12 @@
 <script setup>
-import Canvas from './components/Canvas.vue'
+import { RouterView } from 'vue-router';
 
 </script>
 
 <template>
   <div class="micro-miro">
-    <Canvas></Canvas>
+    <RouterView></RouterView>
   </div>
-  
-
 </template>
 
 <style scoped>

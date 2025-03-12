@@ -2,11 +2,13 @@
 <template>
   <div class="toolbar">
     <button @click="addRectangle">Добавить прямоугольник</button>
+    <router-link to="/">На главную</router-link>
   </div>
 </template>
 
 <script setup>
 import { useCanvasStore } from '@/store/canvas';
+import { RouterLink } from 'vue-router';
 
 const store = useCanvasStore();
 
