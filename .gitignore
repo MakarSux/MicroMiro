@@ -1,4 +1,7 @@
 # .gitignore
+# golang
 *.mod
 *.sum
+*.log
 .env
+microMiro
