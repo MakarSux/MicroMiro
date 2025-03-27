@@ -18,7 +18,7 @@ func setupLogger() *log.Logger{
 
 	file, err := os.OpenFile("app.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
-		log.Fatalf("Ошибка открытия файла лога: %v", err)
+		log.Fatalf("Ошибка открытия файла лога: %v", err)
 	}
 	logger.SetOutput(file)
 	mw := io.MultiWriter(os.Stdout, file)
@@ -43,6 +43,21 @@ func main() {
 
 	router := gin.Default()
 
+	// Настройка CORS
+	router.Use(func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
+	})
+
 	v1 := router.Group("/api/v1")
 	{
 		v1.GET("/ping", func(c *gin.Context) {
@@ -64,6 +79,21 @@ func main() {
 					"email": email,
 				})
 			})
+
+			// Эндпоинты для работы с досками
+			boards := protected.Group("/boards")
+			{
+				boards.POST("", handlers.CreateBoard)
+				boards.GET("", handlers.GetBoards)
+				boards.GET("/:id", handlers.GetBoard)
+				boards.PUT("/:id", handlers.UpdateBoard)
+				boards.DELETE("/:id", handlers.DeleteBoard)
+
+				// Эндпоинты для работы с элементами досок
+				boards.POST("/:id/elements", handlers.CreateBoardElement)
+				boards.PUT("/:id/elements/:element_id", handlers.UpdateBoardElement)
+				boards.DELETE("/:id/elements/:element_id", handlers.DeleteBoardElement)
+			}
 		}
 	}
 

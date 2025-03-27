@@ -1,26 +1,52 @@
 // src/store/canvas.js
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
 
-export const useCanvasStore = defineStore('canvas', () => {
-    const shapes = ref([]);
-  const selectedElementId = ref(null);
-
-  const addShape = (shape) => {
-    shapes.value.push(shape);
-  };
-
-  const updateShapePosition = (id, x, y) => {
-    const shape = shapes.value.find((s) => s.id === id);
-    if (shape) {
-      shape.x = x;
-      shape.y = y;
+export const useCanvasStore = defineStore('canvas', {
+  state: () => ({
+    shapes: [],
+    selectedShapeId: null
+  }),
+  
+  getters: {
+    selectedShape: (state) => {
+      return state.shapes.find(shape => shape.id === state.selectedShapeId);
     }
-  };
-
-  const selectElement = (id) => {
-    selectedElementId.value = id;
-  };
-
-  return { shapes, selectedElementId, addShape, updateShapePosition, selectElement };
+  },
+  
+  actions: {
+    addShape(shape) {
+      this.shapes.push(shape);
+    },
+    
+    updateShape(updatedShape) {
+      const index = this.shapes.findIndex(shape => shape.id === updatedShape.id);
+      if (index !== -1) {
+        this.shapes[index] = updatedShape;
+      }
+    },
+    
+    removeShape(shapeId) {
+      this.shapes = this.shapes.filter(shape => shape.id !== shapeId);
+      if (this.selectedShapeId === shapeId) {
+        this.selectedShapeId = null;
+      }
+    },
+    
+    selectShape(shapeId) {
+      this.selectedShapeId = shapeId;
+    },
+    
+    clearSelection() {
+      this.selectedShapeId = null;
+    },
+    
+    setShapes(shapes) {
+      this.shapes = shapes;
+    },
+    
+    clearShapes() {
+      this.shapes = [];
+      this.selectedShapeId = null;
+    }
+  }
 });
